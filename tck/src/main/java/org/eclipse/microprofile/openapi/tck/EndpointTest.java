@@ -19,6 +19,7 @@ package org.eclipse.microprofile.openapi.tck;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -105,5 +106,12 @@ public class EndpointTest {
     public void testVersion() throws InterruptedException {
         Response response = given().when().get("/proxy");
         response.then().parser("", Parser.JSON).statusCode(200).body("openapi", equalTo("3.0.0")).body("info.description", containsString("Liberty"));
+    }
+
+    @Test
+    @RunAsClient
+    public void testSecurityScheme() throws InterruptedException {
+        Response response = given().when().post("/reviews");
+        response.then().parser("", Parser.JSON).statusCode(200).body("security.reviewoauth2", hasItems("write:reviews"));
     }
 }
