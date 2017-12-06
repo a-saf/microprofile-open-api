@@ -18,8 +18,10 @@ package org.eclipse.microprofile.openapi.tck;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.hasKey;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -110,8 +112,57 @@ public class EndpointTest {
 
     @Test
     @RunAsClient
-    public void testSecurityScheme() throws InterruptedException {
+    public void testSecurityRequirementPostReviews() throws InterruptedException {
         Response response = given().when().post("/reviews");
-        response.then().parser("", Parser.JSON).statusCode(200).body("security.reviewoauth2", hasItems("write:reviews"));
+        response.then().parser("", Parser.JSON).statusCode(200).
+            body("security.reviewoauth2", contains("write:reviews")).
+            body("security.reviewoauth2", hasSize(1));
+    }
+
+    @Test
+    @RunAsClient
+    public void testSecurityRequirementPostUser() throws InterruptedException {
+        Response response = given().when().post("/user");
+        response.then().parser("", Parser.JSON).statusCode(200).
+            body("security.httpTestScheme", contains("write:reviews")).
+            body("security.httpTestScheme", hasSize(1));
+    }
+
+    @Test
+    @RunAsClient
+    public void testSecurityRequirementPostUserArray() throws InterruptedException {
+        Response response = given().when().post("/userCreateWithArray");
+        response.then().parser("", Parser.JSON).statusCode(200).
+            body("security.httpTestScheme", contains("write:reviews")).
+            body("security.httpTestScheme", hasSize(1));
+    }
+
+    @Test
+    @RunAsClient
+    public void testSecurityRequirementPostUserList() throws InterruptedException {
+        Response response = given().when().post("/userCreateWithList");
+        response.then().parser("", Parser.JSON).statusCode(200).
+            body("security.httpTestScheme", contains("write:reviews")).
+            body("security.httpTestScheme", hasSize(1));
+    }
+
+    @Test
+    @RunAsClient
+    public void testSecurityRequirementGetUserByUsername() throws InterruptedException {
+        Response response = given().when().post("/user/{username}");
+        response.then().parser("", Parser.JSON).statusCode(200).
+            body("security.httpTestScheme", contains("write:reviews")).
+            body("security.httpTestScheme", hasSize(1));
+    }
+
+    @Test
+    @RunAsClient
+    public void testSecuritySchemesInComponents() throws InterruptedException {
+        Response response = given().when().get("/proxy");
+        response.then().parser("", Parser.JSON).statusCode(200).
+            body("components.securitySchemes", hasSize(3)).
+            body("components.securitySchemes", hasKey("httpTestScheme")).
+            body("components.securitySchemes", hasKey("airlinesRatingApp_auth")).
+            body("components.securitySchemes", hasKey("reviewoauth2"));
     }
 }

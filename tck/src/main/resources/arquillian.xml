@@ -17,8 +17,8 @@
     <container qualifier="websphere" default="true">
         <configuration>
             <property name="wlpHome">/Users/annasafonov/Documents/libertyGit/WS-CD-Open/dev/build.image/wlp</property>
-            <property name="serverName">defaultServer</property>
-            <property name="httpPort">9080</property>
+            <property name="serverName">testServer</property>
+            <property name="httpPort">9085</property>
             <property name="allowConnectingToRunningServer">true</property>
         </configuration>
     </container>
