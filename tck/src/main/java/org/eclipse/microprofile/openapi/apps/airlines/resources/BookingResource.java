@@ -30,6 +30,7 @@ import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
+import org.eclipse.microprofile.openapi.annotations.servers.Server;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -48,16 +49,21 @@ import javax.ws.rs.core.Response.Status;
 import org.eclipse.microprofile.openapi.apps.airlines.model.Booking;
 
 @Path("/bookings")
+@Tag(
+        name = "Bookings", 
+        description = "All the bookings methods")
 @Tags(
     value = @Tag(
-        name = "Bookings", 
-        description = "All the bookings methods"))
+            name = "Reservations", 
+            description = "All the reservation methods"))
 @SecurityScheme(
     securitySchemeName = "bookingSecurityScheme",
     type = SecuritySchemeType.OPENIDCONNECT,
     description = "Security Scheme for booking resource",
     openIdConnectUrl = "http://openidconnect.com/testurl"
 )
+@Server(description = "Secure server", url = "https://gigantic-server.com:443")
+@Server(description = "Unsecure server", url = "http://gigantic-server.com:80")
 public class BookingResource {
     private Map<Integer, Booking> bookings = new ConcurrentHashMap<Integer, Booking>();
     private volatile int currentId = 0;
@@ -111,7 +117,6 @@ public class BookingResource {
         summary="Create a booking",
         description = "Create a new booking record with the booking information provided.",
         operationId = "createBooking",
-        tags = {"booking"},
         security = @SecurityRequirement(
             name = "bookingSecurityScheme",
             scopes = {"write:bookings", "read:bookings"}
@@ -144,14 +149,7 @@ public class BookingResource {
     )
     @Consumes("application/json")
     @Produces("application/json")
-    public Response createBooking(
-        @Parameter(
-            description = "booking to create",
-            required = true,
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = Booking.class)))
-        Booking task) {
+    public Response createBooking(Booking task) {
             bookings.put(currentId, task);
             return Response.status(Status.CREATED).entity("{\"id\":" + currentId++ + "}").build();
         }
@@ -174,7 +172,6 @@ public class BookingResource {
         method = "get",
         summary="Get a booking with ID",
         operationId = "getBookingById",
-        tags = {"booking"},
         responses={
             @APIResponse(
                 responseCode="200",
@@ -205,7 +202,6 @@ public class BookingResource {
         method = "put",
         summary="Update a booking with ID",
         operationId = "updateBookingId",
-        tags = {"booking"},
         responses={
             @APIResponse(
                 responseCode="200",
@@ -233,7 +229,6 @@ public class BookingResource {
         method = "delete",
         summary="Delete a booking with ID",
         operationId = "deleteBookingById",
-        tags = {"booking"},
         responses={
             @APIResponse(
                 responseCode="200",

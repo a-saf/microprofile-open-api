@@ -65,9 +65,9 @@ import org.eclipse.microprofile.openapi.apps.airlines.model.User;
 @Path("/reviews")
 @Servers({ @Server(description = "Secure server", url = "https://gigantic-server.com:443"),
         @Server(description = "Unsecure server", url = "http://gigantic-server.com:80") })
-@Server(url = "https://gigantic-server.com:{port}",
+@Server(url = "{protocol}://test-server.com",
         description = "The production API server",
-        variables = { @ServerVariable(name = "port", description = "Review data", enumeration = { "9080", "9443" }, defaultValue = "9080") })
+        variables = { @ServerVariable(name = "protocol", enumeration = { "http", "https" }, defaultValue = "https") })
 @SecurityScheme(
     securitySchemeName = "reviewoauth2",
     type = SecuritySchemeType.OAUTH2,
@@ -85,10 +85,11 @@ import org.eclipse.microprofile.openapi.apps.airlines.model.User;
             tokenUrl = "https://example.com/api/oauth/token"
         ),
         password = @OAuthFlow(
-            refreshUrl = "https://example.com/api/oauth/refresh"
+            refreshUrl = "https://example.com/api/oauth/refresh",
+            tokenUrl = "https://example.com/api/oauth/token"
         ),
         clientCredentials = @OAuthFlow(
-            authorizationUrl = "https://example.com/api/oauth/clientcredentials",
+            tokenUrl = "https://example.com/api/oauth/token",
             scopes = @OAuthScope(
                 name = "read:reviews",
                 description = "search for a review"
@@ -97,10 +98,16 @@ import org.eclipse.microprofile.openapi.apps.airlines.model.User;
     )
 )
 @Tags(
-    value = @Tag(
-        name = "Reviews",
-        description = "All the review methods"
-    )
+    value = {
+            @Tag(
+                    name = "Reviews",
+                    description = "All the review methods"
+                    ),
+            @Tag(
+                    name = "Ratings",
+                    description = "All the ratings methods"
+                    )
+            }
 )
 public class ReviewResource {
 
@@ -121,7 +128,6 @@ public class ReviewResource {
         operationId = "getAllReviews",
         summary = "get all the reviews",
         method = "get",
-        tags = {"review"},
         responses = @APIResponse(
             responseCode = "200",
             description = "successful operation",
@@ -146,7 +152,6 @@ public class ReviewResource {
         operationId = "getReviewById",
         summary="Get a review with ID",
         method= "get",
-        tags = {"review"},
         responses={
             @APIResponse(
                 responseCode="200",
@@ -185,7 +190,6 @@ public class ReviewResource {
         method = "get",
         operationId = "getReviewByUser",
         summary="Get all reviews by user",
-        tags = {"review"},
         responses={
             @APIResponse(
                 responseCode="200",
@@ -231,7 +235,6 @@ public class ReviewResource {
         method = "get",
         operationId = "getReviewByAirline",
         summary="Get all reviews by airlines",
-        tags = {"review"},
         parameters = {
             @Parameter(
                 name = "airline",
@@ -287,7 +290,6 @@ public class ReviewResource {
         method = "get",
         operationId = "getReviewByAirlineAndUser",
         summary="Get all reviews for an airline by User",
-        tags = {"review"},
         responses={
             @APIResponse(
                 responseCode="200",
@@ -367,18 +369,12 @@ public class ReviewResource {
         method = "post",
         summary="Create a Review",
         operationId = "createReview",
-        tags = {"review"},
+        tags = {"Reviews"},
         servers = {
-            @Server(
-                url = "localhost:9080/oas3-airlines/reviews/{id}",
-                description = "view of all the reviews",
-                variables = {
-                    @ServerVariable(
-                        name = "id",
-                        description = "id of the review",
-                        defaultValue = "1")
-            })
-        },
+                @Server(url = "localhost:9080/{proxyPath}/reviews/id",
+                        description = "view of all the reviews",
+                        variables = { @ServerVariable(name = "proxyPath", description = "Base path of the proxy", defaultValue = "proxy") }),
+                @Server(url = "http://random.url/reviews", description = "random text") },
         security = @SecurityRequirement(
                      name = "reviewoauth2",
                      scopes = "write:reviews"),
@@ -407,30 +403,12 @@ public class ReviewResource {
                             )
         },
         requestBody = @RequestBody(
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(
-                    implementation = Review.class),
-                examples = @ExampleObject(
-                    name = "review",
-                    summary = "External review example",
-                    externalValue = "http://foo.bar/examples/review-example.json"
-                    )
-                ),
-            required = true,
-            description = "example review to add"
+                ref = "#/components/requestBodies/review"
         )
     )
     @Consumes("application/json")
     @Produces("application/json")
-    public Response createReview(
-        @Parameter(
-            description = "review to create",
-            required = true,
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = Review.class)))
-    Review review) {
+    public Response createReview(Review review) {
         reviews.put(currentId, review);
         return Response.status(Status.CREATED).entity("{\"id\":" + currentId++ + "}").build();
     }
@@ -441,7 +419,6 @@ public class ReviewResource {
         method = "delete",
         summary="Delete a Review with ID",
         operationId = "deleteReview",
-        tags = {"review"},
         responses={
             @APIResponse(
                 responseCode="200",
