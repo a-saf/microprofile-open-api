@@ -534,7 +534,8 @@ public class UserResource {
         ref = "#/components/securitySchemes/httpTestScheme"
     )
     @SecurityRequirement(
-        name = "httpTestScheme"
+        name = "httpTestScheme",
+        scopes = "write:users"
     )
     public Response loginUser(
         @Parameter(

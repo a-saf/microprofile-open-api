@@ -18,17 +18,15 @@ package org.eclipse.microprofile.openapi.tck;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.hasSize;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.eclipse.microprofile.openapi.tck.utils.YamlToJsonConverterServlet;
-import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -143,65 +141,126 @@ public class EndpointTest {
         vr.body("externalDocs.url", containsString("README.md"));
     }
 
-    @Test
-    @RunAsClient
-    public void testServer() {
-        vr.body("servers[*]", Matchers.hasSize(8));
-    }
+    // @Test
+    // @RunAsClient
+    // public void testServer() {
+    //     vr.body("servers.flatten()", IsCollectionWithSize.hasSize(8));
+    // }
 
     @Test
     @RunAsClient
-    public void testSecurityRequirementPostReviews() throws InterruptedException {
-        Response response = given().when().post("/reviews");
-        response.then().parser("", Parser.JSON).statusCode(200).
-            body("security.reviewoauth2", contains("write:reviews")).
-            body("security.reviewoauth2", hasSize(1));
-    }
+    public void testSecurityRequirement() throws InterruptedException {
+        vr.body("security.airlinesRatingApp_auth[0][0]", equalTo(null));
 
-    @Test
-    @RunAsClient
-    public void testSecurityRequirementPostUser() throws InterruptedException {
-        Response response = given().when().post("/user");
-        response.then().parser("", Parser.JSON).statusCode(200).
-            body("security.httpTestScheme", contains("write:reviews")).
-            body("security.httpTestScheme", hasSize(1));
-    }
+        vr.body("paths.'/reviews'.post.security.reviewoauth2[0][0]", equalTo("write:reviews"));
+        vr.body("paths.'/reviews'.post.security.reviewoauth2", hasSize(1));
 
-    @Test
-    @RunAsClient
-    public void testSecurityRequirementPostUserArray() throws InterruptedException {
-        Response response = given().when().post("/userCreateWithArray");
-        response.then().parser("", Parser.JSON).statusCode(200).
-            body("security.httpTestScheme", contains("write:reviews")).
-            body("security.httpTestScheme", hasSize(1));
-    }
+        vr.body("paths.'/bookings'.post.security.bookingSecurityScheme[0][0]", equalTo("write:bookings"));
+        vr.body("paths.'/bookings'.post.security.bookingSecurityScheme[0][1]", equalTo("read:bookings"));
+        vr.body("paths.'/reviews'.post.security.bookingSecurityScheme", hasSize(1));
 
-    @Test
-    @RunAsClient
-    public void testSecurityRequirementPostUserList() throws InterruptedException {
-        Response response = given().when().post("/userCreateWithList");
-        response.then().parser("", Parser.JSON).statusCode(200).
-            body("security.httpTestScheme", contains("write:reviews")).
-            body("security.httpTestScheme", hasSize(1));
-    }
+        vr.body("paths.'/user'.post.security.httpTestScheme[0][0]", equalTo("write:users"));
+        vr.body("paths.'/user'.post.security.httpTestScheme", hasSize(1));
 
-    @Test
-    @RunAsClient
-    public void testSecurityRequirementGetUserByUsername() throws InterruptedException {
-        Response response = given().when().post("/user/{username}");
-        response.then().parser("", Parser.JSON).statusCode(200).
-            body("security.httpTestScheme", contains("write:reviews")).
-            body("security.httpTestScheme", hasSize(1));
+        vr.body("paths.'/user/createWithArray'.post.security.httpTestScheme[0][0]", equalTo("write:users"));
+        vr.body("paths.'/user/createWithArray'.post.security.httpTestScheme", hasSize(1));
+
+        vr.body("paths.'/user/createWithList'.post.security.httpTestScheme[0][0]", equalTo("write:users"));
+        vr.body("paths.'/user/createWithList'.post.security.httpTestScheme", hasSize(1));
+
+        vr.body("paths.'/user/{username}'.get.security.httpTestScheme[0][0]", equalTo("write:users"));
+        vr.body("paths.'/user/{username}'.get.security.httpTestScheme", hasSize(1));
+
+        vr.body("paths.'/user/{username}'.put.security.httpTestScheme[0][0]", equalTo("write:users"));
+        vr.body("paths.'/user/{username}'.put.security.httpTestScheme", hasSize(1));
+
+        vr.body("paths.'/user/{username}'.delete.security.httpTestScheme[0][0]", equalTo("write:users"));
+        vr.body("paths.'/user/{username}'.delete.security.httpTestScheme", hasSize(1));
+
+        vr.body("paths.'/user/{id}'.get.security.httpTestScheme[0][0]", equalTo("write:users"));
+        vr.body("paths.'/user/{id}'.get.security.httpTestScheme", hasSize(1));
+
+        vr.body("paths.'/user/login'.get.security.httpTestScheme[0][0]", equalTo("write:users"));
+
+        vr.body("paths.'/user/logout'.get.security.httpTestScheme[0][0]", equalTo("write:users"));
     }
 
     @Test
     @RunAsClient
     public void testSecuritySchemesInComponents() throws InterruptedException {
-        Response response = given().when().get("/proxy");
-        response.then().parser("", Parser.JSON).statusCode(200).
-            body("components.securitySchemes", hasSize(3)).
-            body("components.securitySchemes", hasKey("httpTestScheme")).
-            body("components.securitySchemes", hasKey("airlinesRatingApp_auth")).
-            body("components.securitySchemes", hasKey("reviewoauth2"));
+        String s = "components.securitySchemes";
+        vr.body(s, hasKey("httpTestScheme"));
+        vr.body(s, hasKey("airlinesRatingApp_auth"));
+        vr.body(s, hasKey("reviewoauth2"));
+        vr.body(s, hasKey("bookingSecurityScheme"));
+
+        vr.body(s + ".httpTestScheme.type", equalTo("http"));
+        vr.body(s + ".httpTestScheme.description", equalTo("user security scheme"));
+        vr.body(s + ".httpTestScheme.scheme", equalTo("testScheme"));
+
+        vr.body(s + ".bookingSecurityScheme.type", equalTo("openIdConnect"));
+        vr.body(s + ".bookingSecurityScheme.description", equalTo("Security Scheme for booking resource"));
+        vr.body(s + ".bookingSecurityScheme.openIdConnectUrl", equalTo("http://openidconnect.com/testurl"));
+
+        vr.body(s + ".airlinesRatingApp_auth.type", equalTo("apiKey"));
+        vr.body(s + ".airlinesRatingApp_auth.description", equalTo("authentication needed to access Airlines app"));
+        vr.body(s + ".airlinesRatingApp_auth.name", equalTo("api_key"));
+        vr.body(s + ".airlinesRatingApp_auth.in", equalTo("header"));
+        
+        vr.body(s + ".reviewoauth2.type", equalTo("oauth2"));
+        vr.body(s + ".reviewoauth2.description", equalTo("authentication needed to create and delete reviews"));
+        
+        String t = "components.securitySchemes.reviewoauth2.flows";
+        vr.body(t + ".implicit.authorizationUrl", equalTo("https://example.com/api/oauth/dialog"));
+        vr.body(t + ".implicit.scopes.'write:reviews'", equalTo("create a review"));
+        vr.body(t + ".authorizationCode.authorizationUrl", equalTo("https://example.com/api/oauth/dialog"));
+        vr.body(t + ".authorizationCode.tokenUrl", equalTo("https://example.com/api/oauth/token"));
+        vr.body(t + ".password.refreshUrl", equalTo("https://example.com/api/oauth/refresh"));
+        vr.body(t + ".clientCredentials.authorizationUrl", equalTo("https://example.com/api/oauth/clientcredentials"));
+        vr.body(t + ".clientCredentials.scopes.'read:reviews'", equalTo("search for a review"));      
     }
+
+    // @Test
+    // @RunAsClient
+    // public void testEncodingRequestBody() throws InterruptedException {
+    //     Thread.sleep(6000);
+    //     vr.body("paths.'/user'.post.requestBody.content.encoding.email.contentType", equalTo("text/plain"));
+    // }
+
+    @Test
+    @RunAsClient
+    public void testEncodingResponses() throws InterruptedException {
+        Thread.sleep(6000);
+        String s = "paths.'/user/{username}'.put.responses.'200'.content.'application/json'.encoding.password.";
+        vr.body(s + "contentType", equalTo("text/plain"));
+        vr.body(s + "style", equalTo("form"));
+        vr.body(s + "explode", equalTo(true));
+        vr.body(s + "allowReserved", equalTo(true));
+
+        String t = "paths.'/user/{username}'.put.responses.'200'.content.'application/xml'.encoding.password.";
+        vr.body(t + "contentType", equalTo("text/plain"));
+        vr.body(t + "style", equalTo("form"));
+        vr.body(t + "explode", equalTo(true));
+        vr.body(t + "allowReserved", equalTo(true));
+    }
+
+    @Test
+    @RunAsClient
+    public void testLink() throws InterruptedException {
+        String s = "paths.'/user/{id}'.get.responses.'200'.links.'User name'.";
+        vr.body(s + "operationId", equalTo("getUserByName"));
+        vr.body(s + "description", equalTo("The username corresponding to provided user id"));
+        vr.body(s + "parameters.userId", equalTo("$request.path.id"));
+
+        String t = "paths.'/user/{id}'.get.responses.'200'.links.Review.";
+        vr.body(t + "operationRef", equalTo("/db/reviews/{userName}"));
+        vr.body(t + "description", equalTo("The reviews provided by user"));
+        vr.body(t + "parameters.'path.userName'", equalTo("$response.body#userName"));
+
+        String k = "paths.'/reviews'.post.responses.'201'.links.Review.";
+        vr.body(k + "operationId", equalTo("getReviewById"));
+        vr.body(k + "description", equalTo("get the review that was added"));
+        vr.body(k + "parameters.reviewId", equalTo("$request.path.id"));
+    }
+
 }
