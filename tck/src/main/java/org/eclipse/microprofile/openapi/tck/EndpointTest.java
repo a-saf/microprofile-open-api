@@ -17,12 +17,12 @@
 package org.eclipse.microprofile.openapi.tck;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.both;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.either;
-import static org.hamcrest.Matchers.empty;
+// import static org.hamcrest.Matchers.both;
+// import static org.hamcrest.Matchers.contains;
+// import static org.hamcrest.Matchers.containsInAnyOrder;
+// import static org.hamcrest.Matchers.containsString;
+// import static org.hamcrest.Matchers.either;
+// import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
@@ -30,8 +30,8 @@ import static org.hamcrest.Matchers.hasSize;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+// import java.util.ArrayList;
+// import java.util.List;
 
 import org.eclipse.microprofile.openapi.tck.utils.YamlToJsonConverterServlet;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -103,8 +103,8 @@ public class EndpointTest {
                 .addAsLibraries(new File("./lib/jackson-databind-2.9.2.jar"))
                 .addAsLibraries(new File("./lib/jackson-annotations-2.9.1.jar"))
                 .addAsLibraries(new File("./lib/snakeyaml-1.18.jar"))
-                .addAsLibraries(new File("./lib/commons-logging-1.2.jar"))
-                .addAsLibraries(new File("./lib/commons-lang3-3.4.jar"));
+                .addAsLibraries(new File("./lib/commons-logging-1.2.jar"));
+               // .addAsLibraries(new File("./lib/commons-lang3-3.4.jar"));
     }
 
     @Deployment(name = "airlines")
@@ -143,94 +143,88 @@ public class EndpointTest {
         vr.body("info.license.url", equalTo("http://www.apache.org/licenses/LICENSE-2.0.html"));
     }
 
-    @Test
-    @RunAsClient
-    public void testExternalDocumentation() {
-        vr.body("externalDocs.description", equalTo("instructions for how to deploy this app"));
-        vr.body("externalDocs.url", containsString("README.md"));
-    }
+    // @Test
+    // @RunAsClient
+    // public void testExternalDocumentation() {
+    //     vr.body("externalDocs.description", equalTo("instructions for how to deploy this app"));
+    //     vr.body("externalDocs.url", containsString("README.md"));
+    // }
 
     // @Test
     // @RunAsClient
     // public void testServer() {
-    //     vr.body("servers.flatten()", IsCollectionWithSize.hasSize(8));
+    //     vr.body("servers", hasSize(2));
+    //     vr.body("servers.url", hasSize(2));
+
+    //     String url = "https://{username}.gigantic-server.com:{port}/{basePath}";
+    //     String serverPath = "servers.find { it.url == '" + url + "' }";
+    //     vr.body(serverPath + ".description", equalTo("The production API server"));
+    //     vr.body(serverPath + ".variables", aMapWithSize(4));
+    //     vr.body(serverPath + ".variables.username.description", equalTo("Reviews of the app by users"));
+    //     vr.body(serverPath + ".variables.username.default", equalTo("user1"));
+    //     vr.body(serverPath + ".variables.username.enum", containsInAnyOrder("user1", "user2"));
+    //     vr.body(serverPath + ".variables.port.description", equalTo("Booking data"));
+    //     vr.body(serverPath + ".variables.port.default", equalTo("8443"));
+    //     vr.body(serverPath + ".variables.user.description", equalTo("User data"));
+    //     vr.body(serverPath + ".variables.user.default", equalTo("user"));
+    //     vr.body(serverPath + ".variables.basePath.default", equalTo("v2"));
+
+    //     url = "https://test-server.com:80/basePath";
+    //     serverPath = "servers.find { it.url == '" + url + "' }";
+    //     vr.body(serverPath + ".description", equalTo("The test API server"));
+
+    //     // Testing @Servers and @Server defined on top of a class with @Server
+    //     // defined in an operation
+    //     // org.eclipse.microprofile.openapi.apps.airlines.resources.ReviewResource
+    //     vr.body("paths.'/reviews/{id}'.delete.servers", hasSize(3));
+    //     vr.body("paths.'/reviews/{id}'.delete.servers.url", hasSize(3));
+
+    //     url = "https://gigantic-server.com:443";
+    //     serverPath = "paths.'/reviews/{id}'.delete.servers.find { it.url == '" + url + "' }";
+    //     vr.body(serverPath + ".description", equalTo("Secure server"));
+
+    //     url = "http://gigantic-server.com:80";
+    //     serverPath = "paths.'/reviews/{id}'.delete.servers.find { it.url == '" + url + "' }";
+    //     vr.body(serverPath + ".description", equalTo("Unsecure server"));
+    //     vr.body(serverPath + ".variables", either(not(empty())).or(notNullValue()));
+
+    //     url = "{protocol}://test-server.com";
+    //     serverPath = "paths.'/reviews/{id}'.delete.servers.find { it.url == '" + url + "' }";
+    //     vr.body(serverPath + ".description", equalTo("The production API server"));
+    //     vr.body(serverPath + ".variables", aMapWithSize(1));
+    //     vr.body(serverPath + ".variables.proxyPath.description", equalTo("Base path of the proxy"));
+    //     vr.body(serverPath + ".variables.proxyPath.default", equalTo("http"));
+    //     vr.body(serverPath + ".variables.proxyPath.enum", containsInAnyOrder("http", "https"));
+
+    //     // Testing two @Server defined in an @operation annotation on a method
+    //     // org.eclipse.microprofile.openapi.apps.airlines.resources.ReviewResource.createReview(Review)
+    //     vr.body("paths.'/reviews'.post.servers", hasSize(2));
+    //     vr.body("paths.'/reviews'.post.servers.url", hasSize(2));
+    //     url = "localhost:9080/{proxyPath}/reviews/id";
+    //     serverPath = "paths.'/reviews'.post.servers.find { it.url == '" + url + "' }";
+    //     vr.body(serverPath + ".description", equalTo("view of all the reviews"));
+    //     vr.body(serverPath + ".variables", aMapWithSize(1));
+    //     vr.body(serverPath + ".variables.proxyPath.description", equalTo("Base path of the proxy"));
+    //     vr.body(serverPath + ".variables.proxyPath.default", equalTo("proxy"));
+    //     url = "http://random.url/reviews";
+    //     serverPath = "paths.'/reviews'.post.servers.find { it.url == '" + url + "' }";
+    //     vr.body(serverPath + ".description", equalTo("random text"));
+
+    //     // Testing two @Server defined on top of a class
+    //     // org.eclipse.microprofile.openapi.apps.airlines.resources.BookingResource
+    //     vr.body("paths.'/bookings'.get.servers", hasSize(2));
+    //     vr.body("paths.'/bookings'.get.servers.url", hasSize(2));
+
+    //     url = "https://gigantic-server.com:80";
+    //     serverPath = "paths.'/bookings'.get.servers.find { it.url == '" + url + "' }";
+    //     vr.body(serverPath + ".description", equalTo("Secure server"));
+    //     vr.body(serverPath + ".variables", either(not(empty())).or(notNullValue()));
+
+    //     url = "https://gigantic-server.com:443";
+    //     serverPath = "paths.'/bookings'.get.servers.find { it.url == '" + url + "' }";
+    //     vr.body(serverPath + ".description", equalTo("Unsecure server"));
+    //     vr.body(serverPath + ".variables", either(not(empty())).or(notNullValue()));
     // }
-
-    @Test
-    @RunAsClient
-    public void testServer() {
-        vr.body("servers", hasSize(2));
-        vr.body("servers.url", hasSize(2));
-
-        String url = "https://{username}.gigantic-server.com:{port}/{basePath}";
-        String serverPath = "servers.find { it.url == '" + url + "' }";
-        vr.body(serverPath + ".description", equalTo("The production API server"));
-        vr.body(serverPath + ".variables", aMapWithSize(4));
-        vr.body(serverPath + ".variables.username.description", equalTo("Reviews of the app by users"));
-        vr.body(serverPath + ".variables.username.default", equalTo("user1"));
-        vr.body(serverPath + ".variables.username.enum", containsInAnyOrder("user1", "user2"));
-        vr.body(serverPath + ".variables.port.description", equalTo("Booking data"));
-        vr.body(serverPath + ".variables.port.default", equalTo("8443"));
-        vr.body(serverPath + ".variables.user.description", equalTo("User data"));
-        vr.body(serverPath + ".variables.user.default", equalTo("user"));
-        vr.body(serverPath + ".variables.basePath.default", equalTo("v2"));
-
-        url = "https://test-server.com:80/basePath";
-        serverPath = "servers.find { it.url == '" + url + "' }";
-        vr.body(serverPath + ".description", equalTo("The test API server"));
-
-        // Testing @Servers and @Server defined on top of a class with @Server
-        // defined in an operation
-        // org.eclipse.microprofile.openapi.apps.airlines.resources.ReviewResource
-        vr.body("paths.'/reviews/{id}'.delete.servers", hasSize(3));
-        vr.body("paths.'/reviews/{id}'.delete.servers.url", hasSize(3));
-
-        url = "https://gigantic-server.com:443";
-        serverPath = "paths.'/reviews/{id}'.delete.servers.find { it.url == '" + url + "' }";
-        vr.body(serverPath + ".description", equalTo("Secure server"));
-
-        url = "http://gigantic-server.com:80";
-        serverPath = "paths.'/reviews/{id}'.delete.servers.find { it.url == '" + url + "' }";
-        vr.body(serverPath + ".description", equalTo("Unsecure server"));
-        vr.body(serverPath + ".variables", either(not(empty())).or(notNullValue()));
-
-        url = "{protocol}://test-server.com";
-        serverPath = "paths.'/reviews/{id}'.delete.servers.find { it.url == '" + url + "' }";
-        vr.body(serverPath + ".description", equalTo("The production API server"));
-        vr.body(serverPath + ".variables", aMapWithSize(1));
-        vr.body(serverPath + ".variables.proxyPath.description", equalTo("Base path of the proxy"));
-        vr.body(serverPath + ".variables.proxyPath.default", equalTo("http"));
-        vr.body(serverPath + ".variables.proxyPath.enum", containsInAnyOrder("http", "https"));
-
-        // Testing two @Server defined in an @operation annotation on a method
-        // org.eclipse.microprofile.openapi.apps.airlines.resources.ReviewResource.createReview(Review)
-        vr.body("paths.'/reviews'.post.servers", hasSize(2));
-        vr.body("paths.'/reviews'.post.servers.url", hasSize(2));
-        url = "localhost:9080/{proxyPath}/reviews/id";
-        serverPath = "paths.'/reviews'.post.servers.find { it.url == '" + url + "' }";
-        vr.body(serverPath + ".description", equalTo("view of all the reviews"));
-        vr.body(serverPath + ".variables", aMapWithSize(1));
-        vr.body(serverPath + ".variables.proxyPath.description", equalTo("Base path of the proxy"));
-        vr.body(serverPath + ".variables.proxyPath.default", equalTo("proxy"));
-        url = "http://random.url/reviews";
-        serverPath = "paths.'/reviews'.post.servers.find { it.url == '" + url + "' }";
-        vr.body(serverPath + ".description", equalTo("random text"));
-
-        // Testing two @Server defined on top of a class
-        // org.eclipse.microprofile.openapi.apps.airlines.resources.BookingResource
-        vr.body("paths.'/bookings'.get.servers", hasSize(2));
-        vr.body("paths.'/bookings'.get.servers.url", hasSize(2));
-
-        url = "https://gigantic-server.com:80";
-        serverPath = "paths.'/bookings'.get.servers.find { it.url == '" + url + "' }";
-        vr.body(serverPath + ".description", equalTo("Secure server"));
-        vr.body(serverPath + ".variables", either(not(empty())).or(notNullValue()));
-
-        url = "https://gigantic-server.com:443";
-        serverPath = "paths.'/bookings'.get.servers.find { it.url == '" + url + "' }";
-        vr.body(serverPath + ".description", equalTo("Unsecure server"));
-        vr.body(serverPath + ".variables", either(not(empty())).or(notNullValue()));
-    }
 
     @Test
     @RunAsClient
@@ -325,89 +319,89 @@ public class EndpointTest {
         vr.body("paths.'/user/logout'.get.operationId", equalTo("logOutUser"));
     }
 
-    @Test
-    @RunAsClient
-    public void testParameter() throws InterruptedException {
-        testAvailabilityGetParamater(vr);
-        testBookingIdMethods(vr);
-        testReviewIdMethods(vr);
-        testUserLoginMethods(vr);
-    }
+    // @Test
+    // @RunAsClient
+    // public void testParameter() throws InterruptedException {
+    //     testAvailabilityGetParamater(vr);
+    //     testBookingIdMethods(vr);
+    //     testReviewIdMethods(vr);
+    //     testUserLoginMethods(vr);
+    // }
 
-    private void testUserLoginMethods(ValidatableResponse vr2) {
-        String reviewParameters = "paths.'/user/login'.get.parameters";
-        vr.body(reviewParameters, hasSize(2));
-        vr.body(reviewParameters + ".findAll { it }.name", hasItems("username", "password"));
-        List<String[]> list = new ArrayList<String[]>();
-        list.add(new String[] { "username", "The user name for login" });
-        list.add(new String[] { "password", "The password for login in clear text" });
+    // private void testUserLoginMethods(ValidatableResponse vr2) {
+    //     String reviewParameters = "paths.'/user/login'.get.parameters";
+    //     vr.body(reviewParameters, hasSize(2));
+    //     vr.body(reviewParameters + ".findAll { it }.name", hasItems("username", "password"));
+    //     List<String[]> list = new ArrayList<String[]>();
+    //     list.add(new String[] { "username", "The user name for login" });
+    //     list.add(new String[] { "password", "The password for login in clear text" });
 
-        for (int i = 0; i < list.size(); i++) {
-            String currentParam = list.get(i)[0];
-            String query = reviewParameters + ".findAll { it.name == '" + currentParam + "' }";
+    //     for (int i = 0; i < list.size(); i++) {
+    //         String currentParam = list.get(i)[0];
+    //         String query = reviewParameters + ".findAll { it.name == '" + currentParam + "' }";
 
-            vr.body(query + ".in", both(hasSize(1)).and(contains("query")));
-            vr.body(query + ".description", both(hasSize(1)).and(contains(list.get(i)[1])));
-            vr.body(query + ".required", both(hasSize(1)).and(contains(true)));
-            vr.body(query + ".schema.type", both(hasSize(1)).and(contains("string")));
-        }
-    }
+    //         vr.body(query + ".in", both(hasSize(1)).and(contains("query")));
+    //         vr.body(query + ".description", both(hasSize(1)).and(contains(list.get(i)[1])));
+    //         vr.body(query + ".required", both(hasSize(1)).and(contains(true)));
+    //         vr.body(query + ".schema.type", both(hasSize(1)).and(contains("string")));
+    //     }
+    // }
 
-    private void testReviewIdMethods(ValidatableResponse vr2) {
-        String reviewParameters = "paths.'/reviews/{id}'.get.parameters";
-        vr.body(reviewParameters, hasSize(1));
-        vr.body(reviewParameters + ".findAll { it }.name", contains("id"));
-        vr.body(reviewParameters + ".findAll { it.name == 'id' }.in", both(hasSize(1)).and(contains("path")));
-        // vr.body(reviewParameters + ".findAll { it.name == 'id' }.description", both(hasSize(1)).and(contains("ID of the booking")));
-        vr.body(reviewParameters + ".findAll { it.name == 'id' }.required", both(hasSize(1)).and(contains(true)));
-        vr.body(reviewParameters + ".findAll { it.name == 'id' }.content.'*/*'.schema.type", both(hasSize(1)).and(contains("integer")));
-    }
+    // private void testReviewIdMethods(ValidatableResponse vr2) {
+    //     String reviewParameters = "paths.'/reviews/{id}'.get.parameters";
+    //     vr.body(reviewParameters, hasSize(1));
+    //     vr.body(reviewParameters + ".findAll { it }.name", contains("id"));
+    //     vr.body(reviewParameters + ".findAll { it.name == 'id' }.in", both(hasSize(1)).and(contains("path")));
+    //     // vr.body(reviewParameters + ".findAll { it.name == 'id' }.description", both(hasSize(1)).and(contains("ID of the booking")));
+    //     vr.body(reviewParameters + ".findAll { it.name == 'id' }.required", both(hasSize(1)).and(contains(true)));
+    //     vr.body(reviewParameters + ".findAll { it.name == 'id' }.content.'*/*'.schema.type", both(hasSize(1)).and(contains("integer")));
+    // }
 
-    private void testBookingIdMethods(ValidatableResponse vr) {
-        String bookingParameters = "paths.'/bookings/{id}'.%s.parameters";
+    // private void testBookingIdMethods(ValidatableResponse vr) {
+    //     String bookingParameters = "paths.'/bookings/{id}'.%s.parameters";
 
-        for (String method : new String[] { "get", "put", "delete" }) {
-            bookingParameters = String.format(bookingParameters, method);
+    //     for (String method : new String[] { "get", "put", "delete" }) {
+    //         bookingParameters = String.format(bookingParameters, method);
 
-            vr.body(bookingParameters, hasSize(1));
-            vr.body(bookingParameters + ".findAll { it }.name", contains("id"));
+    //         vr.body(bookingParameters, hasSize(1));
+    //         vr.body(bookingParameters + ".findAll { it }.name", contains("id"));
 
-            vr.body(bookingParameters + ".findAll { it.name == 'id' }.in", both(hasSize(1)).and(contains("path")));
-            // TODO
-            vr.body(bookingParameters + ".findAll { it.name == 'id' }.description", both(hasSize(1)).and(contains("ID of the booking")));
-            vr.body(bookingParameters + ".findAll { it.name == 'id' }.required", both(hasSize(1)).and(contains(true)));
-            vr.body(bookingParameters + ".findAll { it.name == 'id' }.schema.type", both(hasSize(1)).and(contains("integer")));
-        }
-    }
+    //         vr.body(bookingParameters + ".findAll { it.name == 'id' }.in", both(hasSize(1)).and(contains("path")));
+    //         // TODO
+    //         vr.body(bookingParameters + ".findAll { it.name == 'id' }.description", both(hasSize(1)).and(contains("ID of the booking")));
+    //         vr.body(bookingParameters + ".findAll { it.name == 'id' }.required", both(hasSize(1)).and(contains(true)));
+    //         vr.body(bookingParameters + ".findAll { it.name == 'id' }.schema.type", both(hasSize(1)).and(contains("integer")));
+    //     }
+    // }
 
-    private void testAvailabilityGetParamater(ValidatableResponse vr) {
-        String availabilityParameters = "paths.'/availability'.get.parameters";
+    // private void testAvailabilityGetParamater(ValidatableResponse vr) {
+    //     String availabilityParameters = "paths.'/availability'.get.parameters";
 
-        vr.body(availabilityParameters, hasSize(6));
-        vr.body(availabilityParameters + ".findAll { it }.name",
-                hasItems("departureDate", "airportFrom", "returningDate", "airportTo", "numberOfAdults", "numberOfChildren"));
+    //     vr.body(availabilityParameters, hasSize(6));
+    //     vr.body(availabilityParameters + ".findAll { it }.name",
+    //             hasItems("departureDate", "airportFrom", "returningDate", "airportTo", "numberOfAdults", "numberOfChildren"));
 
-        List<String[]> list = new ArrayList<String[]>();
-        list.add(new String[] { "departureDate", "Customer departure date" });
-        list.add(new String[] { "airportFrom", "Airport the customer departs from" });
-        list.add(new String[] { "returningDate", "Customer return date" });
-        list.add(new String[] { "airportTo", "Airport the customer returns to" });
-        list.add(new String[] { "numberOfAdults", "Number of adults on the flight" });
-        list.add(new String[] { "numberOfChildren", "Number of children on the flight" });
+    //     List<String[]> list = new ArrayList<String[]>();
+    //     list.add(new String[] { "departureDate", "Customer departure date" });
+    //     list.add(new String[] { "airportFrom", "Airport the customer departs from" });
+    //     list.add(new String[] { "returningDate", "Customer return date" });
+    //     list.add(new String[] { "airportTo", "Airport the customer returns to" });
+    //     list.add(new String[] { "numberOfAdults", "Number of adults on the flight" });
+    //     list.add(new String[] { "numberOfChildren", "Number of children on the flight" });
 
-        for (int i = 0; i < list.size(); i++) {
-            String currentParam = list.get(i)[0];
-            String query = availabilityParameters + ".findAll { it.name == '" + currentParam + "' }";
+    //     for (int i = 0; i < list.size(); i++) {
+    //         String currentParam = list.get(i)[0];
+    //         String query = availabilityParameters + ".findAll { it.name == '" + currentParam + "' }";
 
-            vr.body(query + ".in", both(hasSize(1)).and(contains("query")));
-            vr.body(query + ".description", both(hasSize(1)).and(contains(list.get(i)[1])));
-            vr.body(query + ".required", both(hasSize(1)).and(contains(true)));
-            vr.body(query + ".schema.type", both(hasSize(1)).and(contains("string")));
-        }
+    //         vr.body(query + ".in", both(hasSize(1)).and(contains("query")));
+    //         vr.body(query + ".description", both(hasSize(1)).and(contains(list.get(i)[1])));
+    //         vr.body(query + ".required", both(hasSize(1)).and(contains(true)));
+    //         vr.body(query + ".schema.type", both(hasSize(1)).and(contains("string")));
+    //     }
 
-        vr.body(availabilityParameters + ".findAll { it.name == 'numberOfAdults' }.schema.minimum", both(hasSize(1)).and(contains(0)));
-        vr.body(availabilityParameters + ".findAll { it.name == 'numberOfChildren' }.schema.minimum", both(hasSize(1)).and(contains(0)));
-    }
+    //     vr.body(availabilityParameters + ".findAll { it.name == 'numberOfAdults' }.schema.minimum", both(hasSize(1)).and(contains(0)));
+    //     vr.body(availabilityParameters + ".findAll { it.name == 'numberOfChildren' }.schema.minimum", both(hasSize(1)).and(contains(0)));
+    // }
 
     @Test
     @RunAsClient
@@ -429,6 +423,7 @@ public class EndpointTest {
         vr.body("paths.'/bookings'.post.security.bookingSecurityScheme[0][0]", equalTo("write:bookings"));
         vr.body("paths.'/bookings'.post.security.bookingSecurityScheme[0][1]", equalTo("read:bookings"));
         vr.body("paths.'/reviews'.post.security.bookingSecurityScheme", hasSize(1));
+        vr.body("paths.'/bookings'.post.security.bookingSecurityScheme[0]", hasSize(2));
 
         vr.body("paths.'/user'.post.security.httpTestScheme[0][0]", equalTo("write:users"));
         vr.body("paths.'/user'.post.security.httpTestScheme", hasSize(1));
@@ -452,56 +447,96 @@ public class EndpointTest {
         vr.body("paths.'/user/{id}'.get.security.httpTestScheme", hasSize(1));
 
         vr.body("paths.'/user/login'.get.security.httpTestScheme[0][0]", equalTo("write:users"));
+        vr.body("paths.'/user/login'.get.security.httpTestScheme", hasSize(1));
 
         vr.body("paths.'/user/logout'.get.security.httpTestScheme[0][0]", equalTo("write:users"));
+        vr.body("paths.'/user/logout'.get.security.httpTestScheme", hasSize(1));
     }
 
     @Test
     @RunAsClient
-    public void testSecuritySchemesInComponents() throws InterruptedException {
+    public void testSecuritySchemes() throws InterruptedException {
         String s = "components.securitySchemes";
         vr.body(s, hasKey("httpTestScheme"));
         vr.body(s, hasKey("airlinesRatingApp_auth"));
         vr.body(s, hasKey("reviewoauth2"));
         vr.body(s, hasKey("bookingSecurityScheme"));
-
-        vr.body(s + ".httpTestScheme.type", equalTo("http"));
-        vr.body(s + ".httpTestScheme.description", equalTo("user security scheme"));
-        vr.body(s + ".httpTestScheme.scheme", equalTo("testScheme"));
-
-        vr.body(s + ".bookingSecurityScheme.type", equalTo("openIdConnect"));
-        vr.body(s + ".bookingSecurityScheme.description", equalTo("Security Scheme for booking resource"));
-        vr.body(s + ".bookingSecurityScheme.openIdConnectUrl", equalTo("http://openidconnect.com/testurl"));
-
-        vr.body(s + ".airlinesRatingApp_auth.type", equalTo("apiKey"));
-        vr.body(s + ".airlinesRatingApp_auth.description", equalTo("authentication needed to access Airlines app"));
-        vr.body(s + ".airlinesRatingApp_auth.name", equalTo("api_key"));
-        vr.body(s + ".airlinesRatingApp_auth.in", equalTo("header"));
-        
-        vr.body(s + ".reviewoauth2.type", equalTo("oauth2"));
-        vr.body(s + ".reviewoauth2.description", equalTo("authentication needed to create and delete reviews"));
-        
-        String t = "components.securitySchemes.reviewoauth2.flows";
-        vr.body(t + ".implicit.authorizationUrl", equalTo("https://example.com/api/oauth/dialog"));
-        vr.body(t + ".implicit.scopes.'write:reviews'", equalTo("create a review"));
-        vr.body(t + ".authorizationCode.authorizationUrl", equalTo("https://example.com/api/oauth/dialog"));
-        vr.body(t + ".authorizationCode.tokenUrl", equalTo("https://example.com/api/oauth/token"));
-        vr.body(t + ".password.refreshUrl", equalTo("https://example.com/api/oauth/refresh"));
-        vr.body(t + ".clientCredentials.authorizationUrl", equalTo("https://example.com/api/oauth/clientcredentials"));
-        vr.body(t + ".clientCredentials.scopes.'read:reviews'", equalTo("search for a review"));      
     }
 
-    // @Test
-    // @RunAsClient
-    // public void testEncodingRequestBody() throws InterruptedException {
-    //     Thread.sleep(6000);
-    //     vr.body("paths.'/user'.post.requestBody.content.encoding.email.contentType", equalTo("text/plain"));
-    // }
+    @Test
+    @RunAsClient
+    public void testSecurityScheme() throws InterruptedException {
+        String http = "components.securitySchemes.httpTestScheme.";
+        vr.body(http + "type", equalTo("http"));
+        vr.body(http + "description", equalTo("user security scheme"));
+        vr.body(http + "scheme", equalTo("testScheme"));
+
+        String booking = "components.securitySchemes.bookingSecurityScheme.";
+        vr.body(booking + "type", equalTo("openIdConnect"));
+        vr.body(booking + "description", equalTo("Security Scheme for booking resource"));
+        vr.body(booking + "openIdConnectUrl", equalTo("http://openidconnect.com/testurl"));
+
+        String auth = "components.securitySchemes.airlinesRatingApp_auth.";
+        vr.body(auth + "type", equalTo("apiKey"));
+        vr.body(auth + "description", equalTo("authentication needed to access Airlines app"));
+        vr.body(auth + "name", equalTo("api_key"));
+        vr.body(auth + "in", equalTo("header"));
+        
+        String reviewoauth2 = "components.securitySchemes.reviewoauth2.";
+        vr.body(reviewoauth2 + "type", equalTo("oauth2"));
+        vr.body(reviewoauth2 + "description", equalTo("authentication needed to create and delete reviews"));
+    }
+
+    @Test
+    @RunAsClient
+    public void testOAuthFlows() throws InterruptedException {
+        String t = "components.securitySchemes.reviewoauth2.flows";
+        vr.body(t, hasKey("implicit"));
+        vr.body(t, hasKey("authorizationCode"));
+        vr.body(t, hasKey("password"));
+        vr.body(t, hasKey("clientCredentials"));
+    }
+
+    @Test
+    @RunAsClient
+    public void testOAuthFlow() throws InterruptedException {
+        String implicit = "components.securitySchemes.reviewoauth2.flows.implicit.";
+        vr.body(implicit + "authorizationUrl", equalTo("https://example.com/api/oauth/dialog"));
+
+        String authCode = "components.securitySchemes.reviewoauth2.flows.authorizationCode.";
+        vr.body(authCode + "authorizationUrl", equalTo("https://example.com/api/oauth/dialog"));
+        vr.body(authCode + "tokenUrl", equalTo("https://example.com/api/oauth/token"));
+
+        String password = "components.securitySchemes.reviewoauth2.flows.password.";
+        vr.body(password + "refreshUrl", equalTo("https://example.com/api/oauth/refresh"));
+
+        String client = "components.securitySchemes.reviewoauth2.flows.clientCredentials.";
+        vr.body(client + "tokenUrl", equalTo("https://example.com/api/oauth/token"));   
+    }
+
+    @Test
+    @RunAsClient
+    public void testOAuthScope() throws InterruptedException {
+        String implicit = "components.securitySchemes.reviewoauth2.flows.implicit.";
+        vr.body(implicit + "scopes.'write:reviews'", equalTo("create a review"));
+
+        String client = "components.securitySchemes.reviewoauth2.flows.clientCredentials.";
+        vr.body(client + "scopes.'read:reviews'", equalTo("search for a review"));   
+    }
+
+    @Test
+    @RunAsClient
+    public void testEncodingRequestBody() throws InterruptedException {
+        String s = "paths.'/user'.post.requestBody.content.'application/json'.encoding.email.";
+        vr.body(s + "contentType", equalTo("text/plain"));
+        vr.body(s + "style", equalTo("form"));
+        vr.body(s + "explode", equalTo(true));
+        vr.body(s + "allowReserved", equalTo(true));
+    }
 
     @Test
     @RunAsClient
     public void testEncodingResponses() throws InterruptedException {
-        Thread.sleep(6000);
         String s = "paths.'/user/{username}'.put.responses.'200'.content.'application/json'.encoding.password.";
         vr.body(s + "contentType", equalTo("text/plain"));
         vr.body(s + "style", equalTo("form"));
@@ -521,16 +556,26 @@ public class EndpointTest {
         String s = "paths.'/user/{id}'.get.responses.'200'.links.'User name'.";
         vr.body(s + "operationId", equalTo("getUserByName"));
         vr.body(s + "description", equalTo("The username corresponding to provided user id"));
-        vr.body(s + "parameters.userId", equalTo("$request.path.id"));
 
         String t = "paths.'/user/{id}'.get.responses.'200'.links.Review.";
         vr.body(t + "operationRef", equalTo("/db/reviews/{userName}"));
         vr.body(t + "description", equalTo("The reviews provided by user"));
-        vr.body(t + "parameters.'path.userName'", equalTo("$response.body#userName"));
-
+        
         String k = "paths.'/reviews'.post.responses.'201'.links.Review.";
         vr.body(k + "operationId", equalTo("getReviewById"));
         vr.body(k + "description", equalTo("get the review that was added"));
+    }
+
+    @Test
+    @RunAsClient
+    public void testLinkParameter() throws InterruptedException {
+        String s = "paths.'/user/{id}'.get.responses.'200'.links.'User name'.";
+        vr.body(s + "parameters.userId", equalTo("$request.path.id"));
+
+        String t = "paths.'/user/{id}'.get.responses.'200'.links.Review.";
+        vr.body(t + "parameters.'path.userName'", equalTo("$response.body#userName"));
+
+        String k = "paths.'/reviews'.post.responses.'201'.links.Review.";
         vr.body(k + "parameters.reviewId", equalTo("$request.path.id"));
     }
 
