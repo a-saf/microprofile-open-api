@@ -14,6 +14,7 @@
 package org.eclipse.microprofile.openapi.apps.petstore.resource;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.ExternalDocumentation;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeIn;
 import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
@@ -32,6 +33,8 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.media.ExampleObject;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+import org.eclipse.microprofile.openapi.annotations.callbacks.CallbackOperation;
 
 import org.eclipse.microprofile.openapi.apps.petstore.data.PetData;
 import org.eclipse.microprofile.openapi.apps.petstore.model.Pet;
@@ -104,32 +107,31 @@ public class PetResource {
 
     @GET
     @Path("/{petId}")
+    @APIResponses(value={
+            @APIResponse(
+                    responseCode = "400",
+                    description = "Invalid ID supplied",
+                    content = @Content(
+                        mediaType = "none")
+                ),
+                @APIResponse(
+                    responseCode = "404",
+                    description = "Pet not found",
+                    content = @Content(
+                        mediaType = "none")
+                ),
+                @APIResponse(
+                    responseCode = "200",
+                    content = @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(type = SchemaType.ARRAY, implementation = Pet.class, 
+                          oneOf = { Cat.class, Dog.class, Lizard.class }, 
+                          readOnly = true))
+                )
+    })
     @Operation(
-            method = "GET",
             summary = "Find pet by ID",
-            description = "Returns a pet when ID is less than or equal to 10",
-            responses = {
-                    @APIResponse(
-                        responseCode = "400",
-                        description = "Invalid ID supplied",
-                        content = @Content(
-                            mediaType = "none")
-                    ),
-                    @APIResponse(
-                        responseCode = "404",
-                        description = "Pet not found",
-                        content = @Content(
-                            mediaType = "none")
-                    ),
-                    @APIResponse(
-                        responseCode = "200",
-                        content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(type = SchemaType.ARRAY, implementation = Pet.class, 
-                              oneOf = { Cat.class, Dog.class, Lizard.class }, 
-                              readOnly = true))
-                    )
-            }
+            description = "Returns a pet when ID is less than or equal to 10"
     )
     public Response getPetById(
         @Parameter(
@@ -157,22 +159,21 @@ public class PetResource {
 
     @GET
     @Path("/{petId}/download")
+    @APIResponses(value={
+            @APIResponse(
+                    responseCode = "400",
+                    description = "Invalid ID supplied",
+                    content = @Content(mediaType = "none")
+                ),
+                @APIResponse(
+                    responseCode = "404",
+                    description = "Pet not found",
+                    content = @Content(mediaType = "none")
+                )
+    })
     @Operation(
-        method = "GET",
         summary = "Find pet by ID and download it",
-        description = "Returns a pet when ID is less than or equal to 10",
-        responses = {
-            @APIResponse(
-                responseCode = "400",
-                description = "Invalid ID supplied",
-                content = @Content(mediaType = "none")
-            ),
-            @APIResponse(
-                responseCode = "404",
-                description = "Pet not found",
-                content = @Content(mediaType = "none")
-            )
-        }
+        description = "Returns a pet when ID is less than or equal to 10"
     )
     public Response downloadFile(
         @Parameter(
@@ -205,24 +206,23 @@ public class PetResource {
 
     @DELETE
     @Path("/{petId}")
-    @Operation(
-        method = "DELETE",
-        summary = "Deletes a pet by ID",
-        description = "Returns a pet when ID is less than or equal to 10",
-        security = @SecurityRequirement(
+    @SecurityRequirement(
             name = "petsOAuth2",
             scopes = "write:pets"
-        ),
-        responses = {
-            @APIResponse(
-                responseCode = "400",
-                description = "Invalid ID supplied"
-            ),
-            @APIResponse(
-                responseCode = "404",
-                description = "Pet not found"
             )
-        }
+    @APIResponses(value = {
+            @APIResponse(
+                    responseCode = "400",
+                    description = "Invalid ID supplied"
+                ),
+                @APIResponse(
+                    responseCode = "404",
+                    description = "Pet not found"
+                )
+    })
+    @Operation(
+        summary = "Deletes a pet by ID",
+        description = "Returns a pet when ID is less than or equal to 10"
     )
     public Response deletePet(
         @Parameter(
@@ -251,23 +251,18 @@ public class PetResource {
     @POST
     @Consumes({"application/json", "application/xml"})
     @Produces({"application/json", "application/xml"})
-    @Operation(
-        method = "POST",
-        summary = "Add pet to store",
-        description = "Add a new pet to the store",
-        security = @SecurityRequirement(
+    @SecurityRequirement(
             name = "petsApiKey"
-        ),
-        responses = {
-            @APIResponse(
-                responseCode = "400",
-                description = "Invalid input",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = ApiResponse.class))
-            )
-        },
-        requestBody = @RequestBody(
+        )
+    @APIResponse(
+            responseCode = "400",
+            description = "Invalid input",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = ApiResponse.class))
+        )
+    @RequestBody(
+            name="pet",
             content = @Content(
                 mediaType = "application/json",
                 schema = @Schema(implementation = Pet.class), 
@@ -275,43 +270,40 @@ public class PetResource {
             required = true,
             description = "example of a new pet to add"
         )
+    @Operation(
+        summary = "Add pet to store",
+        description = "Add a new pet to the store"
     )
-    public Response addPet(
-        @Parameter(
-            name ="addPet",
-            description = "Pet to add",
-            required = true,
-            schema = @Schema(implementation = Pet.class)) Pet pet) {
+    public Response addPet(Pet pet) {
                 Pet updatedPet = petData.addPet(pet);
                 return Response.ok().entity(updatedPet).build();
             }
 
     @PUT
     @Consumes({"application/json", "application/xml"})
-    @Operation(
-        method = "PUT",
-        summary = "Update an existing pet",
-        description = "Update an existing pet with the given new attributes",
-        security = @SecurityRequirement(
+    @SecurityRequirement(
             name = "petsHttp"
-        ),
-        responses = {
+        )
+    @APIResponses(value={
             @APIResponse(
-                responseCode = "400",
-                description = "Invalid ID supplied",
-                content = @Content(mediaType = "application/json")
-            ),
-            @APIResponse(
-                responseCode = "404",
-                description = "Pet not found",
-                content = @Content(mediaType = "application/json")
-            ),
-            @APIResponse(
-                responseCode = "405",
-                description = "Validation exception",
-                content = @Content(mediaType = "application/json")
-            )
-        }
+                    responseCode = "400",
+                    description = "Invalid ID supplied",
+                    content = @Content(mediaType = "application/json")
+                ),
+                @APIResponse(
+                    responseCode = "404",
+                    description = "Pet not found",
+                    content = @Content(mediaType = "application/json")
+                ),
+                @APIResponse(
+                    responseCode = "405",
+                    description = "Validation exception",
+                    content = @Content(mediaType = "application/json")
+                )
+    })
+    @Operation(
+        summary = "Update an existing pet",
+        description = "Update an existing pet with the given new attributes"
     )
     public Response updatePet(
         @Parameter(
@@ -325,23 +317,20 @@ public class PetResource {
 
     @GET
     @Path("/findByStatus")
+    @APIResponse(
+            responseCode = "400",
+            description = "Invalid status value",
+            content = @Content(mediaType = "none")
+        )
+    @APIResponse(
+            responseCode = "200",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(type = SchemaType.ARRAY, implementation = Pet.class))
+            )
     @Operation(
-        method = "GET",
         summary = "Finds Pets by status",
-        description = "Find all the Pets with the given status; Multiple status values can be provided with comma seperated strings",
-        responses = {
-            @APIResponse(
-                responseCode = "400",
-                description = "Invalid status value",
-                content = @Content(mediaType = "none")
-            ),
-            @APIResponse(
-                responseCode = "200",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(type = SchemaType.ARRAY, implementation = Pet.class))
-                )
-        }
+        description = "Find all the Pets with the given status; Multiple status values can be provided with comma seperated strings"
     )
     @Extension(name = "x-mp-method1", value = "true")
     @Extensions( { @Extension(name = "x-mp-method2", value = "true"), @Extension(value = "false", name = "x-mp-method3") } )
@@ -381,10 +370,9 @@ public class PetResource {
     @Callback(
         name = "tagsCallback",
         callbackUrlExpression = "http://petstoreapp.com/pet",
-        operation = @Operation(
+        operations = @CallbackOperation(
             method = "GET",
             summary = "Finds Pets by tags",
-            deprecated = true,
             description = "Find Pets by tags; Muliple tags can be provided with comma seperated strings. Use tag1, tag2, tag3 for testing.",
             responses = {
                 @APIResponse(
@@ -410,6 +398,7 @@ public class PetResource {
             required = true,
             deprecated = true,
             schema = @Schema(implementation = String.class, deprecated = true,
+              externalDocs = @ExternalDocumentation(description = "Pet Types", url = "http://example.com/pettypes"),
               enumeration = { "Cat", "Dog", "Lizard" }, defaultValue = "Dog" ))
         @QueryParam("tags") String tags) {
             return Response.ok(petData.findPetByTags(tags)).build();
@@ -418,16 +407,13 @@ public class PetResource {
     @POST
     @Path("/{petId}")
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
+    @APIResponse(
+            responseCode = "405",
+            description = "Validation exception",
+            content = @Content(mediaType = "none")
+        )
     @Operation(
-        method = "POST",
-        summary = "Updates a pet in the store with form data",
-        responses = {
-            @APIResponse(
-                responseCode = "405",
-                description = "Validation exception",
-                content = @Content(mediaType = "none")
-            )
-        }
+        summary = "Updates a pet in the store with form data"
     )
     public Response updatePetWithForm (
         @Parameter(

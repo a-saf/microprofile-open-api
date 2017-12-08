@@ -42,8 +42,8 @@ import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
 import org.eclipse.microprofile.openapi.annotations.headers.Header;
 import org.eclipse.microprofile.openapi.annotations.ExternalDocumentation;
 import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
-import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.callbacks.Callback;
+import org.eclipse.microprofile.openapi.annotations.callbacks.CallbackOperation;
 import org.eclipse.microprofile.openapi.annotations.Components;
 import org.eclipse.microprofile.openapi.apps.airlines.model.Airline;
 import org.eclipse.microprofile.openapi.apps.airlines.model.Booking;
@@ -85,8 +85,9 @@ import org.eclipse.microprofile.openapi.apps.airlines.resources.ReviewResource;
                 @Server(url = "https://test-server.com:80/basePath", description = "The test API server") },
         components = @Components(
                 schemas = { 
-                        @Schema(name = "Bookings", type = SchemaType.ARRAY, implementation = Booking.class),
-                        @Schema(name = "Airlines", type = SchemaType.ARRAY, implementation = Airline.class),
+                        @Schema(name = "Bookings", title = "Bookings", type = SchemaType.ARRAY, implementation = Booking.class),
+                        @Schema(name = "Airlines", title = "Airlines", type = SchemaType.ARRAY, implementation = Airline.class),
+                        @Schema(name = "id", type = SchemaType.INTEGER, format="int32"),
                         @Schema(name = "AirlinesRef", ref = "#/components/schemas/Airlines") }, 
                 responses = {
                         @APIResponse(name = "FoundAirlines", responseCode = "200", description = "successfully found airlines", 
@@ -120,7 +121,7 @@ import org.eclipse.microprofile.openapi.apps.airlines.resources.ReviewResource;
                                 parameters = @LinkParameter(name = "userId", expression = "$request.path.id")) }, 
                 callbacks = {
                         @Callback(name = "GetBookings", callbackUrlExpression = "http://localhost:9080/airlines/bookings", 
-                                operation = @Operation(summary = "Retrieve all bookings for current user", 
+                                operations = @CallbackOperation(summary = "Retrieve all bookings for current user", 
                                 responses = {@APIResponse(ref = "FoundBookings") })) 
                         }))
 @SecurityScheme(
